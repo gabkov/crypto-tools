@@ -113,3 +113,49 @@ fn format_value(value: &DynSolValue) -> String {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const ERC20_ABI: &str = r#"[
+        {"type":"function","name":"transfer","inputs":[
+            {"name":"_to","type":"address"},
+            {"name":"_value","type":"uint256"}
+        ],"outputs":[{"name":"","type":"bool"}],"stateMutability":"nonpayable"}
+    ]"#;
+
+    #[test]
+    fn decodes_erc20_transfer() {
+        // transfer(0x...ABC0, 10)
+        let calldata = "0xa9059cbb\
+            000000000000000000000000000000000000000000000000000000000000abc0\
+            000000000000000000000000000000000000000000000000000000000000000a";
+
+        let rendered = decode_call(ERC20_ABI, calldata).unwrap();
+        assert_eq!(
+            rendered,
+            "transfer(address _to = 0x000000000000000000000000000000000000ABC0, uint256 _value = 10)"
+        );
+    }
+
+    #[test]
+    fn accepts_calldata_without_0x_prefix() {
+        let calldata = "a9059cbb\
+            000000000000000000000000000000000000000000000000000000000000abc0\
+            000000000000000000000000000000000000000000000000000000000000000a";
+        assert!(decode_call(ERC20_ABI, calldata).is_ok());
+    }
+
+    #[test]
+    fn errors_on_unknown_selector() {
+        let err = decode_call(ERC20_ABI, "0xdeadbeef").unwrap_err();
+        assert!(err.contains("no function in ABI matches selector 0xdeadbeef"));
+    }
+
+    #[test]
+    fn errors_on_short_calldata() {
+        let err = decode_call(ERC20_ABI, "0xa905").unwrap_err();
+        assert!(err.contains("shorter than a 4-byte selector"));
+    }
+}
