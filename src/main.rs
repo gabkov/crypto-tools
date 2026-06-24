@@ -1,11 +1,13 @@
-//! crypto-tools — an EVM calldata Swiss-army knife.
+//! crypto-tools — an EVM Swiss-army knife.
 //!
-//! Usage:
-//!     cargo run -- <command> [args...]
-//!     cargo run -- decode <abi.json> <calldata-hex>
-//!     cargo run -- encode <abi.json> <function> [args...]
+//! Commands:
+//!     decode    <abi.json> <calldata-hex>      decode calldata into a call
+//!     encode    <abi.json> <function> [args]   encode a call into calldata
+//!     selector  "<signature>"                  4-byte selector of a signature
+//!     keccak    [--hex] <input>                keccak-256 hash of some data
+//!     keygen                                   random private key + address
 //!
-//! Run `cargo run -- --help` for the full command list.
+//! Run `cargo run -- <command> --help` for details on any command.
 
 mod cli;
 mod commands;
