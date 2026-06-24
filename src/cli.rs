@@ -34,4 +34,12 @@ pub enum Commands {
     },
     /// Generate a random private key and its Ethereum address.
     Keygen,
+    /// Compute the keccak-256 hash of some data.
+    Keccak {
+        /// Data to hash (UTF-8 text by default).
+        input: String,
+        /// Interpret the input as hex bytes instead of UTF-8 text.
+        #[arg(long)]
+        hex: bool,
+    },
 }

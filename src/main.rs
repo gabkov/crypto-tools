@@ -28,6 +28,7 @@ fn main() -> ExitCode {
         } => commands::encode::run(&abi, &function, &args),
         Commands::Selector { signature } => commands::selector::run(&signature),
         Commands::Keygen => commands::keygen::run(),
+        Commands::Keccak { input, hex } => commands::keccak::run(&input, hex),
     };
 
     match result {

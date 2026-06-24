@@ -3,6 +3,7 @@
 
 pub mod decode;
 pub mod encode;
+pub mod keccak;
 pub mod keygen;
 pub mod selector;
 
