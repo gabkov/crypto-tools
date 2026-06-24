@@ -1,7 +1,8 @@
 //! A tiny ABI decoder CLI.
 //!
 //! Usage:
-//!     crypto-tools <abi.json> <calldata-hex>
+//!     cargo run -- <abi.json> <calldata-hex>
+//!     ./target/debug/crypto-tools <abi.json> <calldata-hex>   (after `cargo build`)
 //!
 //! Reads a contract ABI, matches the 4-byte selector at the start of the
 //! calldata against the ABI's functions, decodes the arguments, and prints
