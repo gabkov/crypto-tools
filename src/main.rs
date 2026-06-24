@@ -27,6 +27,7 @@ fn main() -> ExitCode {
             args,
         } => commands::encode::run(&abi, &function, &args),
         Commands::Selector { signature } => commands::selector::run(&signature),
+        Commands::Keygen => commands::keygen::run(),
     };
 
     match result {

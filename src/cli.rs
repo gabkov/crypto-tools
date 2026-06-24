@@ -32,4 +32,6 @@ pub enum Commands {
         /// Function signature, e.g. "transfer(address,uint256)".
         signature: String,
     },
+    /// Generate a random private key and its Ethereum address.
+    Keygen,
 }

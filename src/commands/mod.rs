@@ -3,6 +3,7 @@
 
 pub mod decode;
 pub mod encode;
+pub mod keygen;
 pub mod selector;
 
 /// Read an ABI JSON file into a string, mapping IO errors to a message.
