@@ -1,0 +1,10 @@
+[package]
+name = "crypto-tools"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+alloy-dyn-abi = "1.6.0"
+alloy-json-abi = "1.6.0"
+alloy-primitives = "1.6.0"
+serde_json = "1.0.150"
