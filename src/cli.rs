@@ -27,4 +27,9 @@ pub enum Commands {
         /// Function arguments, in declaration order (e.g. 0xabc... 10).
         args: Vec<String>,
     },
+    /// Compute the 4-byte selector of a function signature.
+    Selector {
+        /// Function signature, e.g. "transfer(address,uint256)".
+        signature: String,
+    },
 }

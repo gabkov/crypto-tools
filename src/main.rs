@@ -26,6 +26,7 @@ fn main() -> ExitCode {
             function,
             args,
         } => commands::encode::run(&abi, &function, &args),
+        Commands::Selector { signature } => commands::selector::run(&signature),
     };
 
     match result {

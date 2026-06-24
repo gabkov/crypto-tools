@@ -3,6 +3,7 @@
 
 pub mod decode;
 pub mod encode;
+pub mod selector;
 
 /// Read an ABI JSON file into a string, mapping IO errors to a message.
 pub(crate) fn read_abi_file(path: &str) -> Result<String, String> {
