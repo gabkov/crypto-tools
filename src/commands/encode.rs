@@ -27,7 +27,10 @@ fn encode_call(abi_src: &str, fn_name: &str, args: &[String]) -> Result<String, 
         .ok_or_else(|| match expected_arity {
             None => format!("no function named '{fn_name}' in ABI"),
             Some(n) => {
-                format!("function '{fn_name}' expects {n} argument(s), got {}", args.len())
+                format!(
+                    "function '{fn_name}' expects {n} argument(s), got {}",
+                    args.len()
+                )
             }
         })?;
 

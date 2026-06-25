@@ -19,7 +19,8 @@ fn decode_call(abi_src: &str, calldata_hex: &str) -> Result<String, String> {
         serde_json::from_str(abi_src).map_err(|e| format!("parsing ABI JSON: {e}"))?;
 
     // Decode the calldata hex (with or without a leading "0x").
-    let calldata = hex::decode(calldata_hex.trim()).map_err(|e| format!("bad hex calldata: {e}"))?;
+    let calldata =
+        hex::decode(calldata_hex.trim()).map_err(|e| format!("bad hex calldata: {e}"))?;
     if calldata.len() < 4 {
         return Err("calldata is shorter than a 4-byte selector".into());
     }
@@ -29,7 +30,12 @@ fn decode_call(abi_src: &str, calldata_hex: &str) -> Result<String, String> {
     let func = abi
         .functions()
         .find(|f| f.selector().as_slice() == selector)
-        .ok_or_else(|| format!("no function in ABI matches selector 0x{}", hex::encode(selector)))?;
+        .ok_or_else(|| {
+            format!(
+                "no function in ABI matches selector 0x{}",
+                hex::encode(selector)
+            )
+        })?;
 
     // Decode the argument bytes against the function's input types.
     let values = func
