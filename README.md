@@ -21,6 +21,7 @@ Run via `cargo run -- <command>` (or the built binary at `target/debug/crypto-to
 | `keccak [--hex] <input>` | Keccak-256 hash of UTF-8 text (or hex bytes with `--hex`) |
 | `keygen` | Generate a random private key and its address |
 | `convert <value> <from> <to>` | Convert an amount between ETH units (wei, gwei, ether, …) |
+| `checksum <address>` | Print an address in EIP-55 checksummed form |
 
 ### Examples
 
@@ -46,6 +47,10 @@ cargo run -- keygen
 # Convert between units
 cargo run -- convert 1 ether wei
 # -> 1000000000000000000
+
+# Checksum an address
+cargo run -- checksum 0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed
+# -> 0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed
 ```
 
 ## Project layout
