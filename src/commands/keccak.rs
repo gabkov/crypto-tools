@@ -38,7 +38,10 @@ mod tests {
     #[test]
     fn hex_mode_differs_from_text_mode() {
         // "0x68656c6c6f" is the hex for "hello", so hex mode must match text mode.
-        assert_eq!(run("0x68656c6c6f", true).unwrap(), run("hello", false).unwrap());
+        assert_eq!(
+            run("0x68656c6c6f", true).unwrap(),
+            run("hello", false).unwrap()
+        );
     }
 
     #[test]
