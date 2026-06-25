@@ -42,4 +42,13 @@ pub enum Commands {
         #[arg(long)]
         hex: bool,
     },
+    /// Convert an amount between Ethereum units (e.g. wei, gwei, ether).
+    Convert {
+        /// Amount to convert, in the source unit (e.g. 1.5).
+        value: String,
+        /// Source unit (e.g. ether).
+        from: String,
+        /// Target unit (e.g. wei).
+        to: String,
+    },
 }
