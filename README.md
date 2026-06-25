@@ -20,6 +20,7 @@ Run via `cargo run -- <command>` (or the built binary at `target/debug/crypto-to
 | `selector "<signature>"` | Compute the 4-byte selector of a function signature |
 | `keccak [--hex] <input>` | Keccak-256 hash of UTF-8 text (or hex bytes with `--hex`) |
 | `keygen` | Generate a random private key and its address |
+| `convert <value> <from> <to>` | Convert an amount between ETH units (wei, gwei, ether, …) |
 
 ### Examples
 
@@ -41,6 +42,10 @@ cargo run -- keccak "Transfer(address,address,uint256)"
 
 # Generate a throwaway keypair
 cargo run -- keygen
+
+# Convert between units
+cargo run -- convert 1 ether wei
+# -> 1000000000000000000
 ```
 
 ## Project layout
