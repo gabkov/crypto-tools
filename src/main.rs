@@ -7,6 +7,7 @@
 //!     keccak    [--hex] <input>                keccak-256 hash of some data
 //!     keygen                                   random private key + address
 //!     convert   <value> <from> <to>            convert between ETH units
+//!     checksum  <address>                      EIP-55 checksum an address
 //!
 //! Run `cargo run -- <command> --help` for details on any command.
 
@@ -33,6 +34,7 @@ fn main() -> ExitCode {
         Commands::Keygen => commands::keygen::run(),
         Commands::Keccak { input, hex } => commands::keccak::run(&input, hex),
         Commands::Convert { value, from, to } => commands::convert::run(&value, &from, &to),
+        Commands::Checksum { address } => commands::checksum::run(&address),
     };
 
     match result {

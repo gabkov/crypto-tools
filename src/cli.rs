@@ -51,4 +51,9 @@ pub enum Commands {
         /// Target unit (e.g. wei).
         to: String,
     },
+    /// Print an address in its EIP-55 checksummed form.
+    Checksum {
+        /// Address to checksum (with or without a `0x` prefix).
+        address: String,
+    },
 }
