@@ -1094,6 +1094,7 @@ dependencies = [
  "alloy-signer-local",
  "clap",
  "serde_json",
+ "thiserror",
 ]
 
 [[package]]

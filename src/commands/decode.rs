@@ -4,25 +4,30 @@ use alloy_dyn_abi::{DynSolValue, JsonAbiExt};
 use alloy_json_abi::{Function, JsonAbi};
 use alloy_primitives::hex;
 
+use crate::errors::{
+    self,
+    ToolError::{SelectorTooShort, UnknownSelector},
+};
+
 use super::read_abi_file;
 
 /// Entry point: read the ABI file, then decode the calldata against it.
-pub fn run(abi_path: &str, calldata: &str) -> Result<String, String> {
+pub fn run(abi_path: &str, calldata: &str) -> errors::Result<String> {
     let abi_src = read_abi_file(abi_path)?;
     decode_call(&abi_src, calldata)
 }
 
 /// Decode `calldata_hex` against `abi_src` (the contents of an ABI JSON file)
 /// and return the call rendered as `name(type param = value, ...)`.
-fn decode_call(abi_src: &str, calldata_hex: &str) -> Result<String, String> {
-    let abi: JsonAbi =
-        serde_json::from_str(abi_src).map_err(|e| format!("parsing ABI JSON: {e}"))?;
+fn decode_call(abi_src: &str, calldata_hex: &str) -> errors::Result<String> {
+    let abi: JsonAbi = serde_json::from_str(abi_src)?;
 
     // Decode the calldata hex (with or without a leading "0x").
-    let calldata =
-        hex::decode(calldata_hex.trim()).map_err(|e| format!("bad hex calldata: {e}"))?;
+    let calldata = hex::decode(calldata_hex.trim())?;
     if calldata.len() < 4 {
-        return Err("calldata is shorter than a 4-byte selector".into());
+        return Err(SelectorTooShort(
+            "calldata is shorter than a 4-byte selector".to_string(),
+        ));
     }
     let (selector, args_data) = calldata.split_at(4);
 
@@ -31,16 +36,14 @@ fn decode_call(abi_src: &str, calldata_hex: &str) -> Result<String, String> {
         .functions()
         .find(|f| f.selector().as_slice() == selector)
         .ok_or_else(|| {
-            format!(
+            UnknownSelector(format!(
                 "no function in ABI matches selector 0x{}",
                 hex::encode(selector)
-            )
+            ))
         })?;
 
     // Decode the argument bytes against the function's input types.
-    let values = func
-        .abi_decode_input(args_data)
-        .map_err(|e| format!("decoding arguments: {e}"))?;
+    let values = func.abi_decode_input(args_data)?;
 
     Ok(render_call(func, &values))
 }
@@ -87,6 +90,8 @@ pub(crate) fn format_value(value: &DynSolValue) -> String {
 
 #[cfg(test)]
 mod tests {
+    use crate::errors::ToolError;
+
     use super::*;
 
     const ERC20_ABI: &str = r#"[
@@ -121,12 +126,12 @@ mod tests {
     #[test]
     fn errors_on_unknown_selector() {
         let err = decode_call(ERC20_ABI, "0xdeadbeef").unwrap_err();
-        assert!(err.contains("no function in ABI matches selector 0xdeadbeef"));
+        assert!(matches!(err, ToolError::UnknownSelector(_)));
     }
 
     #[test]
     fn errors_on_short_calldata() {
         let err = decode_call(ERC20_ABI, "0xa905").unwrap_err();
-        assert!(err.contains("shorter than a 4-byte selector"));
+        assert!(matches!(err, ToolError::SelectorTooShort(_)));
     }
 }

@@ -5,8 +5,10 @@
 
 use alloy_signer_local::PrivateKeySigner;
 
+use crate::errors;
+
 /// Entry point: generate a fresh random keypair and render it.
-pub fn run() -> Result<String, String> {
+pub fn run() -> errors::Result<String> {
     Ok(render(&PrivateKeySigner::random()))
 }
 

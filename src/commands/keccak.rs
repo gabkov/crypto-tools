@@ -5,10 +5,12 @@
 
 use alloy_primitives::{hex, keccak256};
 
+use crate::errors;
+
 /// Entry point: hash `input` and return the digest as `0x`-prefixed hex.
-pub fn run(input: &str, as_hex: bool) -> Result<String, String> {
+pub fn run(input: &str, as_hex: bool) -> errors::Result<String> {
     let bytes = if as_hex {
-        hex::decode(input.trim()).map_err(|e| format!("bad hex input: {e}"))?
+        hex::decode(input.trim())?
     } else {
         input.as_bytes().to_vec()
     };

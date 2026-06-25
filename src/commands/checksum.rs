@@ -15,12 +15,14 @@ use std::str::FromStr;
 
 use alloy_primitives::Address;
 
+use crate::errors;
+
 /// Entry point: parse `address` and return it in EIP-55 checksummed form.
 ///
 /// A single-case address carries no checksum, so we just normalize it. A
 /// mixed-case address is asserting an EIP-55 checksum, so we verify that casing
 /// and reject it if it's wrong (catching typos).
-pub fn run(address: &str) -> Result<String, String> {
+pub fn run(address: &str) -> errors::Result<String> {
     // `from_str` tolerates a missing `0x`, but `parse_checksummed` requires it,
     // so normalize to one prefixed form and feed that to both paths.
     let body = address.strip_prefix("0x").unwrap_or(address);
@@ -37,10 +39,9 @@ pub fn run(address: &str) -> Result<String, String> {
         .all(char::is_uppercase);
 
     let parsed = if is_lower || is_upper {
-        Address::from_str(&prefixed).map_err(|e| format!("bad address input: {e}"))?
+        Address::from_str(&prefixed)?
     } else {
-        Address::parse_checksummed(&prefixed, None)
-            .map_err(|e| format!("invalid EIP-55 checksum: {e}"))?
+        Address::parse_checksummed(&prefixed, None)?
     };
 
     Ok(parsed.to_string())
@@ -48,6 +49,8 @@ pub fn run(address: &str) -> Result<String, String> {
 
 #[cfg(test)]
 mod tests {
+    use crate::errors::ToolError;
+
     use super::*;
 
     #[test]
@@ -90,7 +93,7 @@ mod tests {
         // Same address as above with one letter's case flipped (last char).
         let typo = "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAeD";
         let err = run(typo).unwrap_err();
-        assert!(err.contains("invalid EIP-55 checksum"));
+        assert!(matches!(err, ToolError::InvalidChecksum(_)));
     }
 
     #[test]
