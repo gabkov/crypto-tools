@@ -5,11 +5,12 @@
 
 use alloy_primitives::utils::{format_units, parse_units};
 
+use crate::errors;
+
 /// Entry point: parse `value` in the `from` unit and re-express it in `to`.
-pub fn run(value: &str, from: &str, to: &str) -> Result<String, String> {
-    let amount =
-        parse_units(value, from).map_err(|e| format!("parsing '{value}' as {from}: {e}"))?;
-    let formatted = format_units(amount, to).map_err(|e| format!("formatting as {to}: {e}"))?;
+pub fn run(value: &str, from: &str, to: &str) -> errors::Result<String> {
+    let amount = parse_units(value, from)?;
+    let formatted = format_units(amount, to)?;
     Ok(trim_trailing_zeros(formatted))
 }
 

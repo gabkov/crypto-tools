@@ -8,10 +8,11 @@
 use alloy_json_abi::Function;
 use alloy_primitives::hex;
 
+use crate::errors;
+
 /// Entry point: parse `signature` and return its selector as `0x`-prefixed hex.
-pub fn run(signature: &str) -> Result<String, String> {
-    let func =
-        Function::parse(signature).map_err(|e| format!("invalid function signature: {e}"))?;
+pub fn run(signature: &str) -> errors::Result<String> {
+    let func = Function::parse(signature)?;
     Ok(format!("0x{}", hex::encode(func.selector())))
 }
 
