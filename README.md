@@ -1,6 +1,6 @@
 # crypto-tools
 
-A small EVM Swiss-army knife CLI, built on [alloy](https://github.com/alloy-rs/alloy) as a Rust learning project. Encode/decode calldata, compute selectors and hashes, and generate keys.
+A small EVM Swiss-army knife CLI, built on [alloy](https://github.com/alloy-rs/alloy) as a Rust learning project. Encode/decode calldata, compute selectors and hashes, generate keys, and convert between units.
 
 ## Build
 
