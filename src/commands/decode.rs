@@ -4,48 +4,63 @@ use alloy_dyn_abi::{DynSolValue, JsonAbiExt};
 use alloy_json_abi::{Function, JsonAbi};
 use alloy_primitives::hex;
 
-use crate::errors::{
-    self,
-    ToolError::{SelectorTooShort, UnknownSelector},
+use crate::{
+    commands::Command,
+    errors::{
+        self,
+        ToolError::{SelectorTooShort, UnknownSelector},
+    },
 };
 
 use super::read_abi_file;
 
-/// Entry point: read the ABI file, then decode the calldata against it.
-pub fn run(abi_path: &str, calldata: &str) -> errors::Result<String> {
-    let abi_src = read_abi_file(abi_path)?;
-    decode_call(&abi_src, calldata)
+pub struct Decode {
+    abi_path: String,
+    calldata: String,
 }
 
-/// Decode `calldata_hex` against `abi_src` (the contents of an ABI JSON file)
-/// and return the call rendered as `name(type param = value, ...)`.
-fn decode_call(abi_src: &str, calldata_hex: &str) -> errors::Result<String> {
-    let abi: JsonAbi = serde_json::from_str(abi_src)?;
-
-    // Decode the calldata hex (with or without a leading "0x").
-    let calldata = hex::decode(calldata_hex.trim())?;
-    if calldata.len() < 4 {
-        return Err(SelectorTooShort(
-            "calldata is shorter than a 4-byte selector".to_string(),
-        ));
+impl Decode {
+    pub fn new(abi_path: String, calldata: String) -> Self {
+        Decode { abi_path, calldata }
     }
-    let (selector, args_data) = calldata.split_at(4);
 
-    // Find the function whose selector matches the first 4 bytes.
-    let func = abi
-        .functions()
-        .find(|f| f.selector().as_slice() == selector)
-        .ok_or_else(|| {
-            UnknownSelector(format!(
-                "no function in ABI matches selector 0x{}",
-                hex::encode(selector)
-            ))
-        })?;
+    /// Decode `calldata_hex` against `abi_src` (the contents of an ABI JSON file)
+    /// and return the call rendered as `name(type param = value, ...)`.
+    fn decode_call(&self, abi_src: &str) -> errors::Result<String> {
+        let abi: JsonAbi = serde_json::from_str(abi_src)?;
 
-    // Decode the argument bytes against the function's input types.
-    let values = func.abi_decode_input(args_data)?;
+        // Decode the calldata hex (with or without a leading "0x").
+        let calldata = hex::decode(self.calldata.trim())?;
+        if calldata.len() < 4 {
+            return Err(SelectorTooShort(
+                "calldata is shorter than a 4-byte selector".to_string(),
+            ));
+        }
+        let (selector, args_data) = calldata.split_at(4);
 
-    Ok(render_call(func, &values))
+        // Find the function whose selector matches the first 4 bytes.
+        let func = abi
+            .functions()
+            .find(|f| f.selector().as_slice() == selector)
+            .ok_or_else(|| {
+                UnknownSelector(format!(
+                    "no function in ABI matches selector 0x{}",
+                    hex::encode(selector)
+                ))
+            })?;
+
+        // Decode the argument bytes against the function's input types.
+        let values = func.abi_decode_input(args_data)?;
+
+        Ok(render_call(func, &values))
+    }
+}
+
+impl Command for Decode {
+    fn run(&self) -> errors::Result<String> {
+        let abi_src = read_abi_file(&self.abi_path)?;
+        self.decode_call(&abi_src)
+    }
 }
 
 /// Render a decoded call as `name(type param = value, ...)`.
@@ -108,7 +123,9 @@ mod tests {
             000000000000000000000000000000000000000000000000000000000000abc0\
             000000000000000000000000000000000000000000000000000000000000000a";
 
-        let rendered = decode_call(ERC20_ABI, calldata).unwrap();
+        let decode = Decode::new(String::new(), calldata.to_string());
+
+        let rendered = decode.decode_call(ERC20_ABI).unwrap();
         assert_eq!(
             rendered,
             "transfer(address _to = 0x000000000000000000000000000000000000ABC0, uint256 _value = 10)"
@@ -120,18 +137,22 @@ mod tests {
         let calldata = "a9059cbb\
             000000000000000000000000000000000000000000000000000000000000abc0\
             000000000000000000000000000000000000000000000000000000000000000a";
-        assert!(decode_call(ERC20_ABI, calldata).is_ok());
+
+        let decode = Decode::new(String::new(), calldata.to_string());
+        assert!(decode.decode_call(ERC20_ABI).is_ok());
     }
 
     #[test]
     fn errors_on_unknown_selector() {
-        let err = decode_call(ERC20_ABI, "0xdeadbeef").unwrap_err();
+        let decode = Decode::new(String::new(), "0xdeadbeef".to_string());
+        let err = decode.decode_call(ERC20_ABI).unwrap_err();
         assert!(matches!(err, ToolError::UnknownSelector(_)));
     }
 
     #[test]
     fn errors_on_short_calldata() {
-        let err = decode_call(ERC20_ABI, "0xa905").unwrap_err();
+        let decode = Decode::new(String::new(), "0xa905".to_string());
+        let err = decode.decode_call(ERC20_ABI).unwrap_err();
         assert!(matches!(err, ToolError::SelectorTooShort(_)));
     }
 }

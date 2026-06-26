@@ -11,6 +11,10 @@ pub mod keccak;
 pub mod keygen;
 pub mod selector;
 
+pub trait Command {
+    fn run(&self) -> errors::Result<String>;
+}
+
 /// Read an ABI JSON file into a string, mapping IO errors to a message.
 pub(crate) fn read_abi_file(path: &str) -> errors::Result<String> {
     Ok(std::fs::read_to_string(path)?)
