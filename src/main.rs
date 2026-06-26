@@ -21,24 +21,29 @@ use clap::Parser;
 
 use cli::{Cli, Commands};
 
+use crate::commands::{
+    Command, checksum::Checksum, convert::Convert, decode::Decode, encode::Encode, keccak::Keccak,
+    keygen::Keygen, selector::Selector,
+};
+
 fn main() -> ExitCode {
     let cli = Cli::parse();
 
-    let result = match cli.command {
-        Commands::Decode { abi, calldata } => commands::decode::run(&abi, &calldata),
+    let result: Box<dyn Command> = match &cli.command {
+        Commands::Decode { abi, calldata } => Box::new(Decode::new(abi, calldata)),
         Commands::Encode {
             abi,
             function,
             args,
-        } => commands::encode::run(&abi, &function, &args),
-        Commands::Selector { signature } => commands::selector::run(&signature),
-        Commands::Keygen => commands::keygen::run(),
-        Commands::Keccak { input, hex } => commands::keccak::run(&input, hex),
-        Commands::Convert { value, from, to } => commands::convert::run(&value, &from, &to),
-        Commands::Checksum { address } => commands::checksum::run(&address),
+        } => Box::new(Encode::new(abi, function, args)),
+        Commands::Selector { signature } => Box::new(Selector::new(signature)),
+        Commands::Keygen => Box::new(Keygen::new()),
+        Commands::Keccak { input, hex } => Box::new(Keccak::new(input, *hex)),
+        Commands::Convert { value, from, to } => Box::new(Convert::new(value, from, to)),
+        Commands::Checksum { address } => Box::new(Checksum::new(address)),
     };
 
-    match result {
+    match result.run() {
         Ok(output) => {
             println!("{output}");
             ExitCode::SUCCESS

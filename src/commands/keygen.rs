@@ -5,20 +5,28 @@
 
 use alloy_signer_local::PrivateKeySigner;
 
-use crate::errors;
+use crate::{commands::Command, errors};
 
-/// Entry point: generate a fresh random keypair and render it.
-pub fn run() -> errors::Result<String> {
-    Ok(render(&PrivateKeySigner::random()))
+pub struct Keygen {}
+
+impl Keygen {
+    pub fn new() -> Self {
+        Keygen {}
+    }
+
+    fn render(signer: &PrivateKeySigner) -> String {
+        format!(
+            "private_key: 0x{}\naddress:     {}",
+            alloy_primitives::hex::encode(signer.to_bytes()),
+            signer.address(),
+        )
+    }
 }
 
-/// Render a signer as its private key and derived address.
-fn render(signer: &PrivateKeySigner) -> String {
-    format!(
-        "private_key: 0x{}\naddress:     {}",
-        alloy_primitives::hex::encode(signer.to_bytes()),
-        signer.address(),
-    )
+impl Command for Keygen {
+    fn run(&self) -> errors::Result<String> {
+        Ok(Keygen::render(&PrivateKeySigner::random()))
+    }
 }
 
 #[cfg(test)]
@@ -33,7 +41,7 @@ mod tests {
             "0x0000000000000000000000000000000000000000000000000000000000000001",
         )
         .unwrap();
-        let rendered = render(&signer);
+        let rendered = Keygen::render(&signer);
         assert!(rendered.contains(
             "private_key: 0x0000000000000000000000000000000000000000000000000000000000000001"
         ));
@@ -42,7 +50,9 @@ mod tests {
 
     #[test]
     fn generates_distinct_keys() {
+        let keygen1 = Keygen::new();
+        let keygen2 = Keygen::new();
         // Two random generations should not collide.
-        assert_ne!(run().unwrap(), run().unwrap());
+        assert_ne!(keygen1.run().unwrap(), keygen2.run().unwrap());
     }
 }
