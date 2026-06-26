@@ -14,14 +14,14 @@ use crate::{
 
 use super::read_abi_file;
 
-pub struct Encode<'a> {
-    abi_path: &'a str,
-    fn_name: &'a str,
-    args: &'a [String],
+pub struct Encode {
+    abi_path: String,
+    fn_name: String,
+    args: Vec<String>,
 }
 
-impl<'a> Encode<'a> {
-    pub fn new(abi_path: &'a str, fn_name: &'a str, args: &'a [String]) -> Self {
+impl Encode {
+    pub fn new(abi_path: String, fn_name: String, args: Vec<String>) -> Self {
         Encode {
             abi_path,
             fn_name,
@@ -52,7 +52,7 @@ impl<'a> Encode<'a> {
 
         // Coerce each string arg into a typed value matching the parameter type.
         let mut values = Vec::with_capacity(self.args.len());
-        for (input, arg) in func.inputs.iter().zip(self.args) {
+        for (input, arg) in func.inputs.iter().zip(self.args.iter()) {
             let ty: DynSolType = input.resolve()?;
             let value = ty.coerce_str(arg)?;
             values.push(value);
@@ -65,9 +65,9 @@ impl<'a> Encode<'a> {
     }
 }
 
-impl<'a> Command for Encode<'a> {
+impl Command for Encode {
     fn run(&self) -> errors::Result<String> {
-        let abi_src = read_abi_file(self.abi_path)?;
+        let abi_src = read_abi_file(&self.abi_path)?;
         self.encode_call(&abi_src)
     }
 }
@@ -87,11 +87,11 @@ mod tests {
 
     #[test]
     fn encodes_erc20_transfer() {
-        let args = [
+        let args = vec![
             "0x000000000000000000000000000000000000abc0".to_string(),
             "10".to_string(),
         ];
-        let encode = Encode::new("", "transfer", &args);
+        let encode = Encode::new(String::new(), "transfer".to_string(), args);
         let calldata = encode.encode_call(ERC20_ABI).unwrap();
         assert_eq!(
             calldata,
@@ -103,15 +103,15 @@ mod tests {
 
     #[test]
     fn errors_on_unknown_function() {
-        let encode = Encode::new("", "mint", &[]);
+        let encode = Encode::new(String::new(), "mint".to_string(), vec![]);
         let err = encode.encode_call(ERC20_ABI).unwrap_err();
         assert!(matches!(err, ToolError::FunctionNotFound(_)));
     }
 
     #[test]
     fn errors_on_wrong_arity() {
-        let args = ["0x000000000000000000000000000000000000abc0".to_string()];
-        let encode = Encode::new("", "transfer", &args);
+        let args = vec!["0x000000000000000000000000000000000000abc0".to_string()];
+        let encode = Encode::new(String::new(), "transfer".to_string(), args);
         let err = encode.encode_call(ERC20_ABI).unwrap_err();
         assert!(matches!(err, ToolError::InvalidArguments(_)));
     }

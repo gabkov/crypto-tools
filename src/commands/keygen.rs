@@ -7,11 +7,12 @@ use alloy_signer_local::PrivateKeySigner;
 
 use crate::{commands::Command, errors};
 
-pub struct Keygen {}
+#[derive(Default)]
+pub struct Keygen;
 
 impl Keygen {
     pub fn new() -> Self {
-        Keygen {}
+        Keygen
     }
 
     fn render(signer: &PrivateKeySigner) -> String {

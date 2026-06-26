@@ -29,7 +29,7 @@ use crate::commands::{
 fn main() -> ExitCode {
     let cli = Cli::parse();
 
-    let result: Box<dyn Command> = match &cli.command {
+    let result: Box<dyn Command> = match cli.command {
         Commands::Decode { abi, calldata } => Box::new(Decode::new(abi, calldata)),
         Commands::Encode {
             abi,
@@ -38,7 +38,7 @@ fn main() -> ExitCode {
         } => Box::new(Encode::new(abi, function, args)),
         Commands::Selector { signature } => Box::new(Selector::new(signature)),
         Commands::Keygen => Box::new(Keygen::new()),
-        Commands::Keccak { input, hex } => Box::new(Keccak::new(input, *hex)),
+        Commands::Keccak { input, hex } => Box::new(Keccak::new(input, hex)),
         Commands::Convert { value, from, to } => Box::new(Convert::new(value, from, to)),
         Commands::Checksum { address } => Box::new(Checksum::new(address)),
     };

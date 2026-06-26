@@ -14,13 +14,13 @@ use crate::{
 
 use super::read_abi_file;
 
-pub struct Decode<'a> {
-    abi_path: &'a str,
-    calldata: &'a str,
+pub struct Decode {
+    abi_path: String,
+    calldata: String,
 }
 
-impl<'a> Decode<'a> {
-    pub fn new(abi_path: &'a str, calldata: &'a str) -> Self {
+impl Decode {
+    pub fn new(abi_path: String, calldata: String) -> Self {
         Decode { abi_path, calldata }
     }
 
@@ -56,9 +56,9 @@ impl<'a> Decode<'a> {
     }
 }
 
-impl<'a> Command for Decode<'a> {
+impl Command for Decode {
     fn run(&self) -> errors::Result<String> {
-        let abi_src = read_abi_file(self.abi_path)?;
+        let abi_src = read_abi_file(&self.abi_path)?;
         self.decode_call(&abi_src)
     }
 }
@@ -123,7 +123,7 @@ mod tests {
             000000000000000000000000000000000000000000000000000000000000abc0\
             000000000000000000000000000000000000000000000000000000000000000a";
 
-        let decode = Decode::new("", calldata);
+        let decode = Decode::new(String::new(), calldata.to_string());
 
         let rendered = decode.decode_call(ERC20_ABI).unwrap();
         assert_eq!(
@@ -138,20 +138,20 @@ mod tests {
             000000000000000000000000000000000000000000000000000000000000abc0\
             000000000000000000000000000000000000000000000000000000000000000a";
 
-        let decode = Decode::new("", calldata);
+        let decode = Decode::new(String::new(), calldata.to_string());
         assert!(decode.decode_call(ERC20_ABI).is_ok());
     }
 
     #[test]
     fn errors_on_unknown_selector() {
-        let decode = Decode::new("", "0xdeadbeef");
+        let decode = Decode::new(String::new(), "0xdeadbeef".to_string());
         let err = decode.decode_call(ERC20_ABI).unwrap_err();
         assert!(matches!(err, ToolError::UnknownSelector(_)));
     }
 
     #[test]
     fn errors_on_short_calldata() {
-        let decode = Decode::new("", "0xa905");
+        let decode = Decode::new(String::new(), "0xa905".to_string());
         let err = decode.decode_call(ERC20_ABI).unwrap_err();
         assert!(matches!(err, ToolError::SelectorTooShort(_)));
     }

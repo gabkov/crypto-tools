@@ -7,14 +7,14 @@ use alloy_primitives::utils::{format_units, parse_units};
 
 use crate::{commands::Command, errors};
 
-pub struct Convert<'a> {
-    value: &'a str,
-    from: &'a str,
-    to: &'a str,
+pub struct Convert {
+    value: String,
+    from: String,
+    to: String,
 }
 
-impl<'a> Convert<'a> {
-    pub fn new(value: &'a str, from: &'a str, to: &'a str) -> Self {
+impl Convert {
+    pub fn new(value: String, from: String, to: String) -> Self {
         Convert { value, from, to }
     }
 
@@ -29,10 +29,10 @@ impl<'a> Convert<'a> {
     }
 }
 
-impl<'a> Command for Convert<'a> {
+impl Command for Convert {
     fn run(&self) -> errors::Result<String> {
-        let amount = parse_units(self.value, self.from)?;
-        let formatted = format_units(amount, self.to)?;
+        let amount = parse_units(&self.value, &self.from)?;
+        let formatted = format_units(amount, &self.to)?;
         Ok(Convert::trim_trailing_zeros(formatted))
     }
 }
@@ -43,32 +43,40 @@ mod tests {
 
     #[test]
     fn ether_to_wei() {
-        let convert = Convert::new("1", "ether", "wei");
+        let convert = Convert::new("1".to_string(), "ether".to_string(), "wei".to_string());
         assert_eq!(convert.run().unwrap(), "1000000000000000000");
     }
 
     #[test]
     fn wei_to_gwei() {
-        let convert = Convert::new("1000000000", "wei", "gwei");
+        let convert = Convert::new(
+            "1000000000".to_string(),
+            "wei".to_string(),
+            "gwei".to_string(),
+        );
         assert_eq!(convert.run().unwrap(), "1");
     }
 
     #[test]
     fn fractional_ether() {
-        let convert = Convert::new("2.5", "ether", "gwei");
+        let convert = Convert::new("2.5".to_string(), "ether".to_string(), "gwei".to_string());
         assert_eq!(convert.run().unwrap(), "2500000000");
     }
 
     #[test]
     fn preserves_significant_fraction() {
-        let convert = Convert::new("1234567890", "wei", "gwei");
+        let convert = Convert::new(
+            "1234567890".to_string(),
+            "wei".to_string(),
+            "gwei".to_string(),
+        );
         // Trimming must not eat meaningful digits.
         assert_eq!(convert.run().unwrap(), "1.23456789");
     }
 
     #[test]
     fn errors_on_unknown_unit() {
-        let convert = Convert::new("1", "ether", "dollars");
+        let convert = Convert::new("1".to_string(), "ether".to_string(), "dollars".to_string());
         assert!(convert.run().is_err());
     }
 }

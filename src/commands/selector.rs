@@ -10,19 +10,19 @@ use alloy_primitives::hex;
 
 use crate::{commands::Command, errors};
 
-pub struct Selector<'a> {
-    signature: &'a str,
+pub struct Selector {
+    signature: String,
 }
 
-impl<'a> Selector<'a> {
-    pub fn new(signature: &'a str) -> Self {
+impl Selector {
+    pub fn new(signature: String) -> Self {
         Selector { signature }
     }
 }
 
-impl<'a> Command for Selector<'a> {
+impl Command for Selector {
     fn run(&self) -> errors::Result<String> {
-        let func = Function::parse(self.signature)?;
+        let func = Function::parse(&self.signature)?;
         Ok(format!("0x{}", hex::encode(func.selector())))
     }
 }
@@ -33,19 +33,19 @@ mod tests {
 
     #[test]
     fn computes_erc20_transfer_selector() {
-        let selector = Selector::new("transfer(address,uint256)");
+        let selector = Selector::new("transfer(address,uint256)".to_string());
         assert_eq!(selector.run().unwrap(), "0xa9059cbb");
     }
 
     #[test]
     fn tolerates_whitespace_in_signature() {
-        let selector = Selector::new("transfer(address, uint256)");
+        let selector = Selector::new("transfer(address, uint256)".to_string());
         assert_eq!(selector.run().unwrap(), "0xa9059cbb");
     }
 
     #[test]
     fn errors_on_garbage_signature() {
-        let selector = Selector::new("not a signature");
+        let selector = Selector::new("not a signature".to_string());
         assert!(selector.run().is_err());
     }
 }
