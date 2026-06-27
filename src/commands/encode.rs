@@ -1,8 +1,8 @@
 //! `encode` — turn a function name + string args into hex calldata.
 
-use alloy_dyn_abi::{DynSolType, JsonAbiExt, Specifier};
-use alloy_json_abi::{Function, JsonAbi};
-use alloy_primitives::hex;
+use alloy::dyn_abi::{DynSolType, JsonAbiExt, Specifier};
+use alloy::json_abi::{Function, JsonAbi};
+use alloy::primitives::hex;
 
 use crate::errors::{
     self,

@@ -22,6 +22,7 @@ Run via `cargo run -- <command>` (or the built binary at `target/debug/crypto-to
 | `keygen` | Generate a random private key and its address |
 | `convert <value> <from> <to>` | Convert an amount between ETH units (wei, gwei, ether, …) |
 | `checksum <address>` | Print an address in EIP-55 checksummed form (validates mixed-case input) |
+| `balance <address> [--rpc-url <url>]` | Query an address's ETH balance from an EVM RPC (defaults to a public RPC) |
 
 ### Examples
 
@@ -52,6 +53,12 @@ cargo run -- convert 1 ether wei
 cargo run -- checksum 0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed
 # -> 0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed
 # A mixed-case address with a typo'd letter is rejected as an invalid checksum.
+
+# Query an ETH balance (uses the default RPC)
+cargo run -- balance 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
+# -> 1.234567890123456789 (ether)
+# Override the RPC endpoint:
+cargo run -- balance 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 --rpc-url https://eth.llamarpc.com
 ```
 
 ## Project layout

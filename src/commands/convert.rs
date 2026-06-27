@@ -3,7 +3,7 @@
 //! Units are whatever alloy accepts (wei, gwei, ether, and aliases like eth,
 //! shannon, szabo). Conversion goes through wei internally, so it's exact.
 
-use alloy_primitives::utils::{format_units, parse_units};
+use alloy::primitives::utils::{format_units, parse_units};
 
 use crate::errors;
 

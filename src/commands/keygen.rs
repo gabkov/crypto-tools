@@ -3,7 +3,7 @@
 //! Key generation is secure (`random()` uses a cryptographic RNG). The risk is
 //! *handling*: it prints the secret to stdout and keeps an un-zeroized copy.
 
-use alloy_signer_local::PrivateKeySigner;
+use alloy::signers::local::PrivateKeySigner;
 
 use crate::errors;
 
@@ -16,7 +16,7 @@ pub fn run() -> errors::Result<String> {
 fn render(signer: &PrivateKeySigner) -> String {
     format!(
         "private_key: 0x{}\naddress:     {}",
-        alloy_primitives::hex::encode(signer.to_bytes()),
+        alloy::primitives::hex::encode(signer.to_bytes()),
         signer.address(),
     )
 }

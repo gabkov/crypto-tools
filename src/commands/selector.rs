@@ -5,8 +5,8 @@
 //! signature with alloy first so the canonical form — and the hashing — are
 //! handled correctly regardless of incidental whitespace.
 
-use alloy_json_abi::Function;
-use alloy_primitives::hex;
+use alloy::json_abi::Function;
+use alloy::primitives::hex;
 
 use crate::errors;
 

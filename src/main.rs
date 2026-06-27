@@ -8,6 +8,7 @@
 //!     keygen                                   random private key + address
 //!     convert   <value> <from> <to>            convert between ETH units
 //!     checksum  <address>                      EIP-55 checksum an address
+//!     balance   <address> [--rpc-url <url>]     query an address's ETH balance
 //!
 //! Run `cargo run -- <command> --help` for details on any command.
 
@@ -21,7 +22,8 @@ use clap::Parser;
 
 use cli::{Cli, Commands};
 
-fn main() -> ExitCode {
+#[tokio::main(flavor = "current_thread")]
+async fn main() -> ExitCode {
     let cli = Cli::parse();
 
     let result = match cli.command {
@@ -36,6 +38,7 @@ fn main() -> ExitCode {
         Commands::Keccak { input, hex } => commands::keccak::run(&input, hex),
         Commands::Convert { value, from, to } => commands::convert::run(&value, &from, &to),
         Commands::Checksum { address } => commands::checksum::run(&address),
+        Commands::Balance { address, rpc_url } => commands::balance::run(&address, &rpc_url).await,
     };
 
     match result {
