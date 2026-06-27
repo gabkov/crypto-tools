@@ -8,6 +8,7 @@
 //!     keygen                                   random private key + address
 //!     convert   <value> <from> <to>            convert between ETH units
 //!     checksum  <address>                      EIP-55 checksum an address
+//!     balance   <address> [--rpc-url <url>]     query an address's ETH balance
 //!
 //! Run `cargo run -- <command> --help` for details on any command.
 
