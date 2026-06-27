@@ -6,10 +6,10 @@ use alloy::{providers::Provider, providers::ProviderBuilder};
 
 use crate::errors;
 
-pub async fn run(address: &str) -> errors::Result<String> {
+pub async fn run(address: &str, rpc: &str) -> errors::Result<String> {
     let parsed = Address::from_str(address)?;
 
-    let rpc_url = "https://rpc.mevblocker.io".parse()?;
+    let rpc_url = rpc.parse()?;
     let provider = ProviderBuilder::new().connect_http(rpc_url);
 
     let balance = provider.get_balance(parsed).await?;

@@ -37,7 +37,7 @@ async fn main() -> ExitCode {
         Commands::Keccak { input, hex } => commands::keccak::run(&input, hex),
         Commands::Convert { value, from, to } => commands::convert::run(&value, &from, &to),
         Commands::Checksum { address } => commands::checksum::run(&address),
-        Commands::Balance { address } => commands::balance::run(&address).await,
+        Commands::Balance { address, rpc_url } => commands::balance::run(&address, &rpc_url).await,
     };
 
     match result {

@@ -56,9 +56,12 @@ pub enum Commands {
         /// Address to checksum (with or without a `0x` prefix).
         address: String,
     },
-    /// Polls the current balance address from ethereum
+    /// Polls the current balance address from ethereum or any supplied RPC/Chain (must be EVM compatible)
     Balance {
-        /// Address to poll.
+        /// Address to get the balance for.
         address: String,
+        /// RPC endpoint to query.
+        #[arg(long, default_value = "https://rpc.mevblocker.io")]
+        rpc_url: String,
     },
 }
