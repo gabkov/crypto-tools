@@ -56,4 +56,9 @@ pub enum Commands {
         /// Address to checksum (with or without a `0x` prefix).
         address: String,
     },
+    /// Polls the current balance address from ethereum
+    Balance {
+        /// Address to poll.
+        address: String,
+    },
 }

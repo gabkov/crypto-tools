@@ -3,6 +3,7 @@
 
 use crate::errors;
 
+pub mod balance;
 pub mod checksum;
 pub mod convert;
 pub mod decode;

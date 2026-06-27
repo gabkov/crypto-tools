@@ -1,4 +1,7 @@
-use alloy::primitives::{AddressError, hex, utils::UnitsError};
+use alloy::{
+    primitives::{AddressError, hex, utils::UnitsError},
+    transports::{RpcError, TransportErrorKind},
+};
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -26,6 +29,12 @@ pub enum ToolError {
 
     #[error("invalid EIP-55 checksum: {0}")]
     InvalidChecksum(#[from] AddressError),
+
+    #[error("invalid RPC url: {0}")]
+    InvalidRpcUrl(#[from] url::ParseError),
+
+    #[error("invalid balance request: {0}")]
+    InvalidBalanceRequest(#[from] RpcError<TransportErrorKind>),
 
     // Manually-constructed messages stay as `String`; `{0}` just prints it.
     #[error("{0}")]

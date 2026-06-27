@@ -21,7 +21,8 @@ use clap::Parser;
 
 use cli::{Cli, Commands};
 
-fn main() -> ExitCode {
+#[tokio::main(flavor = "current_thread")]
+async fn main() -> ExitCode {
     let cli = Cli::parse();
 
     let result = match cli.command {
@@ -36,6 +37,7 @@ fn main() -> ExitCode {
         Commands::Keccak { input, hex } => commands::keccak::run(&input, hex),
         Commands::Convert { value, from, to } => commands::convert::run(&value, &from, &to),
         Commands::Checksum { address } => commands::checksum::run(&address),
+        Commands::Balance { address } => commands::balance::run(&address).await,
     };
 
     match result {

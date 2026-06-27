@@ -1407,6 +1407,8 @@ dependencies = [
  "clap",
  "serde_json",
  "thiserror",
+ "tokio",
+ "url",
 ]
 
 [[package]]
