@@ -1,8 +1,8 @@
 //! `decode` — turn raw hex calldata into a human-readable function call.
 
-use alloy_dyn_abi::{DynSolValue, JsonAbiExt};
-use alloy_json_abi::{Function, JsonAbi};
-use alloy_primitives::hex;
+use alloy::dyn_abi::{DynSolValue, JsonAbiExt};
+use alloy::json_abi::{Function, JsonAbi};
+use alloy::primitives::hex;
 
 use crate::errors::{
     self,

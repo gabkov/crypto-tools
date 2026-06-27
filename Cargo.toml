@@ -4,10 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-alloy-dyn-abi = "1.6.0"
-alloy-json-abi = "1.6.0"
-alloy-primitives = "1.6.0"
-alloy-signer-local = "2.1.0"
+alloy = { version = "2.1.0", features = ["json-abi", "dyn-abi", "signer-local", "providers", "reqwest"] }
 clap = { version = "4.6.1", features = ["derive"] }
 serde_json = "1.0.150"
 thiserror = "2.0.18"

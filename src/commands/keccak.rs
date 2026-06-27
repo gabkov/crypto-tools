@@ -3,7 +3,7 @@
 //! Hashes the UTF-8 bytes of the input by default; pass `--hex` to hash the
 //! decoded bytes of a hex string instead.
 
-use alloy_primitives::{hex, keccak256};
+use alloy::primitives::{hex, keccak256};
 
 use crate::errors;
 

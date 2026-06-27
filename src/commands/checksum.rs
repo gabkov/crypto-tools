@@ -13,7 +13,7 @@
 
 use std::str::FromStr;
 
-use alloy_primitives::Address;
+use alloy::primitives::Address;
 
 use crate::errors;
 
